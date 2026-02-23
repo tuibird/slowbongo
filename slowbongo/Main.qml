@@ -292,9 +292,9 @@ Item {
                 stdout: SplitParser {
                     onRead: data => {
                         if (data.includes("EV_KEY") && data.includes("value 1")) {
-                            // Detect spacebar for double slap (both paws)
-                            const isSpace = data.includes("KEY_SPACE");
-                            root.onKeyPress(isSpace);
+                            // Detect spacebar/enter for double slap (both paws)
+                            const isBigHit = data.includes("KEY_SPACE") || data.includes("KEY_ENTER");
+                            root.onKeyPress(isBigHit);
                         }
                     }
                 }
