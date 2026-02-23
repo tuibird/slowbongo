@@ -20,7 +20,7 @@ ColumnLayout {
     property string editCatColor: {
         let saved = pluginApi?.pluginSettings?.catColor
         if (saved && saved.length > 0) return saved
-        return pluginApi?.manifest?.metadata?.defaultSettings?.catColor ?? "default"
+        return pluginApi?.manifest?.metadata?.defaultSettings?.catColor ?? "none"
     }
 
     property real editCatSize: {
@@ -64,14 +64,6 @@ ColumnLayout {
     // Status colors (with fallback for theme compatibility)
     readonly property color statusSuccessColor: Color.mPrimary
     readonly property color statusErrorColor: Color.mError ?? "#c00202"
-
-    // Configuration data
-    readonly property var colorOptions: [
-        { key: "default",   labelKey: "colors.default",   color: Color.mOnSurface },
-        { key: "primary",   labelKey: "colors.primary",   color: Color.mPrimary },
-        { key: "secondary", labelKey: "colors.secondary", color: Color.mSecondary },
-        { key: "tertiary",  labelKey: "colors.tertiary",  color: Color.mTertiary },
-    ]
 
     property var inputDevices: []
 
@@ -411,100 +403,11 @@ ColumnLayout {
         Layout.fillWidth: true
     }
 
-    // Colours Section
-    Text {
-        text: pluginApi?.tr("settings.colours") || "Colours"
-        color: Color.mOnSurface
-        font.pointSize: Style.fontSizeM
-        font.weight: Font.DemiBold
-    }
-
-    NBox {
-        id: colourBox
-        Layout.fillWidth: true
-        implicitHeight: colourContent.implicitHeight + Style.marginM * 2
-
-        property int circleSize: Math.round(Style.baseWidgetSize * 0.9)
-        property int columnCount: root.colorOptions.length
-        property real availableInner: colourBox.width - Style.marginM * 2
-        property real columnWidth: columnCount > 0 ? availableInner / columnCount : 0
-
-        ColumnLayout {
-            id: colourContent
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: Style.marginM
-            spacing: 0
-
-            Row {
-                id: colourRow
-                Layout.fillWidth: true
-
-                Repeater {
-                    model: root.colorOptions
-
-                    Item {
-                        required property var modelData
-                        required property int index
-
-                        width: colourBox.columnWidth
-                        height: colorCol.implicitHeight
-
-                        ColumnLayout {
-                            id: colorCol
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            spacing: Style.marginXS
-
-                            Rectangle {
-                                id: colorCircle
-                                property bool isSelected: root.editCatColor === modelData.key
-                                property bool isHovered: circleMouseArea.containsMouse
-
-                                Layout.alignment: Qt.AlignHCenter
-                                implicitWidth: colourBox.circleSize
-                                implicitHeight: implicitWidth
-                                radius: width / 2
-                                color: modelData.color
-                                border.color: isSelected ? Color.mOnSurface : "transparent"
-                                border.width: isSelected ? Style.borderS + 1 : 0
-                                scale: isHovered ? 1.15 : 1.0
-
-                                Behavior on scale {
-                                    NumberAnimation { duration: Style.animationFast; easing.type: Easing.OutCubic }
-                                }
-                                Behavior on border.color {
-                                    ColorAnimation { duration: Style.animationFast }
-                                }
-
-                                MouseArea {
-                                    id: circleMouseArea
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: root.editCatColor = modelData.key
-                                }
-
-                                NIcon {
-                                    anchors.centerIn: parent
-                                    icon: "check"
-                                    pointSize: Math.max(Style.fontSizeXS, colorCircle.implicitWidth * 0.4)
-                                    color: Color.mOnPrimary
-                                    visible: colorCircle.isSelected
-                                }
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: pluginApi?.tr(modelData.labelKey) || modelData.key.charAt(0).toUpperCase() + modelData.key.slice(1)
-                                color: Color.mOnSurfaceVariant
-                                font.pointSize: Style.fontSizeS
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    // Widget Color
+    NColorChoice {
+        label: pluginApi?.tr("settings.colours") || "Colours"
+        currentKey: root.editCatColor
+        onSelected: key => { root.editCatColor = key; }
     }
 
     // Rave Mode
@@ -546,6 +449,8 @@ ColumnLayout {
         from: 0.5
         to: 1.5
         stepSize: 0.01
+        defaultValue: 1.0
+        showReset: true
         text: Math.round(root.editCatSize * 100) + "%"
         onMoved: value => root.editCatSize = value
     }
@@ -558,6 +463,8 @@ ColumnLayout {
         from: -0.39
         to: 0.61
         stepSize: 0.01
+        defaultValue: 0.11
+        showReset: true
         text: { let v = Math.round(-(root.editCatOffsetY - 0.11) * 100) / 100; return (v > 0 ? "+" : "") + v.toFixed(2) }
         onMoved: value => root.editCatOffsetY = value
     }
