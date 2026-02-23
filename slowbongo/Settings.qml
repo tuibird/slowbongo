@@ -293,6 +293,72 @@ ColumnLayout {
         Layout.fillWidth: true
     }
 
+    // Widget Color
+    NColorChoice {
+        label: pluginApi?.tr("settings.colours") || "Colours"
+        currentKey: root.editCatColor
+        onSelected: key => { root.editCatColor = key; }
+    }
+
+    // Cat Size Section
+    NValueSlider {
+        Layout.fillWidth: true
+        label: pluginApi?.tr("settings.cat-size") || "Cat Size"
+        value: root.editCatSize
+        from: 0.5
+        to: 1.5
+        stepSize: 0.01
+        defaultValue: 1.0
+        showReset: true
+        text: Math.round(root.editCatSize * 100) + "%"
+        onMoved: value => root.editCatSize = value
+    }
+
+    // Vertical Position Section
+    NValueSlider {
+        Layout.fillWidth: true
+        label: pluginApi?.tr("settings.vertical-position") || "Vertical Position"
+        value: root.editCatOffsetY
+        from: -0.39
+        to: 0.61
+        stepSize: 0.01
+        defaultValue: 0.11
+        showReset: true
+        text: { let v = Math.round(-(root.editCatOffsetY - 0.11) * 100) / 100; return (v > 0 ? "+" : "") + v.toFixed(2) }
+        onMoved: value => root.editCatOffsetY = value
+    }
+
+    // Rave Mode
+    NToggle {
+        label: pluginApi?.tr("settings.rave-mode") || "Rave Mode"
+        description: pluginApi?.tr("settings.rave-mode-desc") || "Change colors to the beat when music is playing"
+        checked: root.editRaveMode
+        onToggled: checked => root.editRaveMode = checked
+        defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.raveMode ?? false
+    }
+
+    // Tappy Mode
+    NToggle {
+        label: pluginApi?.tr("settings.tappy-mode") || "Tappy Mode"
+        description: pluginApi?.tr("settings.tappy-mode-desc") || "Make the cat tap along to the beat when music is playing"
+        checked: root.editTappyMode
+        onToggled: checked => root.editTappyMode = checked
+        defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.tappyMode ?? false
+    }
+
+    // MPRIS Filtering
+    NToggle {
+        label: pluginApi?.tr("settings.mpris-filter") || "MPRIS Filtering"
+        description: pluginApi?.tr("settings.mpris-filter-desc") || "Only react to audio when a non-blacklisted media player is playing (uses NoctalisShell audio blacklist)"
+        checked: root.editUseMprisFilter
+        onToggled: checked => root.editUseMprisFilter = checked
+        defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.useMprisFilter ?? false
+    }
+
+    NDivider {
+        Layout.fillWidth: true
+    }
+
     // Input Devices Section
     Text {
         text: pluginApi?.tr("settings.input-devices") || "Input Devices"
@@ -397,76 +463,6 @@ ColumnLayout {
                 }
             }
         }
-    }
-
-    NDivider {
-        Layout.fillWidth: true
-    }
-
-    // Widget Color
-    NColorChoice {
-        label: pluginApi?.tr("settings.colours") || "Colours"
-        currentKey: root.editCatColor
-        onSelected: key => { root.editCatColor = key; }
-    }
-
-    // Rave Mode
-    NToggle {
-        label: pluginApi?.tr("settings.rave-mode") || "Rave Mode"
-        description: pluginApi?.tr("settings.rave-mode-desc") || "Change colors to the beat when music is playing"
-        checked: root.editRaveMode
-        onToggled: checked => root.editRaveMode = checked
-        defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.raveMode ?? false
-    }
-
-    // Tappy Mode
-    NToggle {
-        label: pluginApi?.tr("settings.tappy-mode") || "Tappy Mode"
-        description: pluginApi?.tr("settings.tappy-mode-desc") || "Make the cat tap along to the beat when music is playing"
-        checked: root.editTappyMode
-        onToggled: checked => root.editTappyMode = checked
-        defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.tappyMode ?? false
-    }
-
-    // MPRIS Filtering
-    NToggle {
-        label: pluginApi?.tr("settings.mpris-filter") || "MPRIS Filtering"
-        description: pluginApi?.tr("settings.mpris-filter-desc") || "Only react to audio when a non-blacklisted media player is playing (uses NoctalisShell audio blacklist)"
-        checked: root.editUseMprisFilter
-        onToggled: checked => root.editUseMprisFilter = checked
-        defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.useMprisFilter ?? false
-    }
-
-    NDivider {
-        Layout.fillWidth: true
-    }
-
-    // Cat Size Section
-    NValueSlider {
-        Layout.fillWidth: true
-        label: pluginApi?.tr("settings.cat-size") || "Cat Size"
-        value: root.editCatSize
-        from: 0.5
-        to: 1.5
-        stepSize: 0.01
-        defaultValue: 1.0
-        showReset: true
-        text: Math.round(root.editCatSize * 100) + "%"
-        onMoved: value => root.editCatSize = value
-    }
-
-    // Vertical Position Section
-    NValueSlider {
-        Layout.fillWidth: true
-        label: pluginApi?.tr("settings.vertical-position") || "Vertical Position"
-        value: root.editCatOffsetY
-        from: -0.39
-        to: 0.61
-        stepSize: 0.01
-        defaultValue: 0.11
-        showReset: true
-        text: { let v = Math.round(-(root.editCatOffsetY - 0.11) * 100) / 100; return (v > 0 ? "+" : "") + v.toFixed(2) }
-        onMoved: value => root.editCatOffsetY = value
     }
 
     function saveSettings() {
