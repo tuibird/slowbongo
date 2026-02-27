@@ -425,9 +425,14 @@ Item {
                     if (exitCode === 0) {
                         Logger.i("Slow Bongo", "Device detected, restarting monitoring: " + deviceMonitor.modelData);
                         evtestProc.running = true;
-                    } else if (deviceMonitor.retryCount <= deviceMonitor.retryIntervals.length) {
-                        Logger.i("Slow Bongo", "Device not found, will check again: " + deviceMonitor.modelData);
+                    } else if (deviceMonitor.retryCount < deviceMonitor.retryIntervals.length) {
+                        deviceMonitor.retryCount++;;
+                        const interval = deviceMonitor.retryIntervals[deviceMonitor.retryCount - 1];
+                        Logger.i("Slow Bongo", "Device " + deviceMonitor.modelData + " not found, will retry in " + Math.floor(interval / 1000) + "s (attempt " + deviceMonitor.retryCount + "/" + deviceMonitor.retryIntervals.length + ")");
+                        restartTimer.interval = interval;
                         restartTimer.start();
+                    } else {
+                        Logger.w("Slow Bongo", "Max retries reached for device: " + deviceMonitor.modelData + ". Giving up.");
                     }
                 }
             }
